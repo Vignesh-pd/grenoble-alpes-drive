@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1620" />
+    <title>Grenoble — Alpes Drive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="./assets/index-D-JTRFNN.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/three-BdOzVF9i.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-vuQHdBIE.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- ── BOOT / LOADING ─────────────────────────────────────────── -->
+    <div id="loading">
+      <div class="load-bg"></div>
+      <div class="load-content">
+        <div class="load-kicker">43° 36′ N · 5° 43′ E</div>
+        <h1 class="load-title">GRENOBLE</h1>
+        <div class="load-sub">CAPITALE DES ALPES</div>
+        <div class="load-bar"><div id="loadProgress"></div></div>
+        <div class="load-status" id="loadStatus">Building the Isère valley…</div>
+        <div class="load-tip" id="loadTip">Tip — Use the trams to cross town without traffic.</div>
+      </div>
+    </div>
+
+    <!-- ── INTRO ─────────────────────────────────────────────────── -->
+    <div id="intro" class="overlay hidden">
+      <div class="intro-vignette"></div>
+      <div class="intro-card">
+        <div class="intro-topline">
+          <span>GRENOBLE · ISÈRE · FRANCE</span>
+          <span class="intro-coords">45.1885° N &nbsp; 5.7245° E</span>
+        </div>
+        <div class="intro-title">
+          <div class="intro-title-small">ALPES</div>
+          <div class="intro-title-big">DRIVE</div>
+          <div class="intro-title-city">GRENOBLE<span>®</span></div>
+        </div>
+        <p class="intro-tagline">One city. Three massifs. Every way to move.</p>
+        <p class="intro-copy">
+          Free-roam a hand-built Alpine capital: the Isère, the old town, the Gare,
+          the Bastille fort and the snowline above Chamrousse. Ride the trams, take
+          the <em>bulles</em>, hike the switchbacks, or strap on skis when the weather turns.
+        </p>
+
+        <div class="feature-row">
+          <div class="feature"><b>05</b><span>TRAM LINES</span></div>
+          <div class="feature"><b>08</b><span>VEHICLES</span></div>
+          <div class="feature"><b>04</b><span>HIKING TRAILS</span></div>
+          <div class="feature"><b>03</b><span>WEATHER MODES</span></div>
+        </div>
+
+        <button id="startBtn">
+          <span class="start-label">TAKE THE KEYS</span>
+          <span class="start-arrow">→</span>
+        </button>
+
+        <div class="intro-controls">
+          <div><kbd>WASD</kbd> Move / Drive</div>
+          <div><kbd>MOUSE</kbd> Look</div>
+          <div><kbd>E</kbd> Enter / Exit</div>
+          <div><kbd>M</kbd> Full city map</div>
+          <div><kbd>1 2 3</kbd> Weather</div>
+          <div><kbd>R</kbd> Skis</div>
+          <div><kbd>SHIFT</kbd> Sprint / Boost</div>
+          <div><kbd>SPACE</kbd> Jump / Brake</div>
+          <div><kbd>H</kbd> Help</div>
+        </div>
+        <div class="intro-footer">
+          <span>CLICK TO CAPTURE THE MOUSE · ESC FOR THE MENU</span>
+          <span class="intro-made">A PROCEDURAL ALPINE REPLICA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HUD ───────────────────────────────────────────────────── -->
+    <div id="hud" class="hidden">
+      <div class="hud-vignette"></div>
+      <div class="hud-grain"></div>
+
+      <!-- Minimap -->
+      <div class="panel map-panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">GRENOBLE</div>
+            <div class="district" id="districtName">PLACE GRENETTE</div>
+          </div>
+          <div class="compass"><span>N</span><i></i></div>
+        </div>
+        <div class="map-wrap">
+          <canvas id="minimap" width="440" height="440"></canvas>
+          <div class="map-ring"></div>
+          <div class="map-scan"></div>
+        </div>
+        <div class="map-foot">
+          <span id="coords">45.188 · 5.724</span>
+          <span id="altitude">ALT 212 M</span>
+          <button id="mapOpen" title="Open the city map">MAP <kbd>M</kbd></button>
+        </div>
+        <div class="reward-strip">
+          <div class="reward-score">
+            <span class="eyebrow">REWARD POINTS</span>
+            <strong><span id="rewardPoints">0</span><small>PTS</small></strong>
+          </div>
+          <div class="reward-meta">
+            <span id="rewardRank">VISITEUR</span>
+            <span id="rewardDistance">0.00 KM</span>
+          </div>
+          <div class="reward-progress">
+            <div class="reward-bar"><i id="rewardFill"></i></div>
+            <div class="reward-next">
+              <span id="rewardNext">NEXT 100 M</span>
+              <b id="rewardBonus">+50 PTS</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weather -->
+      <div class="panel weather-panel">
+        <div class="panel-head weather-head">
+          <div>
+            <div class="eyebrow">ISÈRE VALLEY</div>
+            <div class="weather-now" id="weatherName">SUNNY</div>
+          </div>
+          <div class="weather-temp"><span id="weatherTemp">21</span><sup>°C</sup></div>
+        </div>
+        <div class="weather-buttons" id="weatherButtons">
+          <button data-weather="sunny" class="active">
+            <span class="wicon sun"></span><span>SUN</span><kbd>1</kbd>
+          </button>
+          <button data-weather="rain">
+            <span class="wicon rain"></span><span>RAIN</span><kbd>2</kbd>
+          </button>
+          <button data-weather="snow">
+            <span class="wicon snow"></span><span>SNOW</span><kbd>3</kbd>
+          </button>
+        </div>
+        <div class="weather-meta">
+          <span id="weatherClock">16:40</span>
+          <span id="weatherWind">BREEZE · 8 KM/H</span>
+        </div>
+      </div>
+
+      <!-- Missions -->
+      <div class="panel missions" id="missions">
+        <div class="panel-head">
+          <div class="eyebrow">CITY CHECKLIST</div>
+          <button id="missionsToggle" aria-label="Toggle checklist">–</button>
+        </div>
+        <div class="mission-list" id="missionList"></div>
+      </div>
+
+      <!-- Location banner -->
+      <div id="locationBanner">
+        <span class="loc-line"></span>
+        <span id="locationText">PLACE GRENETTE</span>
+        <span class="loc-line"></span>
+      </div>
+
+      <!-- Interaction prompt -->
+      <div id="prompt" class="hidden">
+        <kbd id="promptKey">E</kbd>
+        <span id="promptText">Enter the tram</span>
+      </div>
+
+      <!-- Live tram station board -->
+      <div id="stationBoard" class="panel hidden" aria-live="polite">
+        <div class="station-head">
+          <div>
+            <div class="eyebrow">TAG · LIVE ARRIVALS</div>
+            <div class="station-name" id="stationName">Alsace-Lorraine</div>
+          </div>
+          <div class="station-badge" id="stationBadge">A</div>
+        </div>
+        <div class="station-rows" id="stationRows"></div>
+        <div class="station-foot">
+          <span id="stationService">5 MIN HEADWAY · LIVE</span>
+          <span id="stationDistance">48 M</span>
+        </div>
+      </div>
+
+      <!-- On-board tram display -->
+      <div id="onboardBoard" class="panel hidden" aria-live="polite">
+        <div class="station-head">
+          <div>
+            <div class="eyebrow">TAG · ON BOARD</div>
+            <div class="onboard-line" id="onboardLine">LIGNE A · FONTAINE</div>
+          </div>
+          <div class="station-badge" id="onboardBadge">A</div>
+        </div>
+        <div class="onboard-next">
+          <span class="onboard-kicker" id="onboardKicker">PROCHAIN ARRÊT</span>
+          <strong id="onboardNextStop">Cours Berriat</strong>
+          <span class="onboard-eta" id="onboardEta">2:14</span>
+        </div>
+        <div class="onboard-follow" id="onboardFollowing">PUIS · VICTOR HUGO · GRENETTE</div>
+        <div class="station-foot">
+          <span id="onboardRemaining">TERMINUS · FONTAINE</span>
+          <span id="onboardSpeed">28 KM/H</span>
+        </div>
+      </div>
+
+      <!-- Speed / mode -->
+      <div class="speed-panel" id="speedPanel">
+        <div class="speed-top">
+          <span id="modeLabel">ON FOOT</span>
+          <span id="modeMeta">GRENOBLE</span>
+        </div>
+        <div class="speed-main">
+          <span id="speedValue">0</span>
+          <div class="speed-unit"><span>KM/H</span><i id="gearLabel">—</i></div>
+        </div>
+        <div class="speed-bar"><div id="speedFill"></div></div>
+        <div class="speed-hint" id="speedHint">WASD TO MOVE · SHIFT TO RUN</div>
+      </div>
+
+      <!-- Trail / ski telemetry -->
+      <div id="telemetry" class="panel hidden">
+        <div class="tele-head">
+          <span id="teleLabel">ON TRAIL</span>
+          <span id="teleElev">ALT 212 M</span>
+        </div>
+        <div class="tele-name" id="teleName">Montée de Chalemont</div>
+        <div class="tele-bar"><div id="teleFill"></div></div>
+        <div class="tele-foot">
+          <span id="teleDistance">0 M</span>
+          <span id="teleState">HIKING</span>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div id="toasts"></div>
+
+      <!-- Help -->
+      <button id="helpBtn" title="Help">?</button>
+      <div id="help" class="hidden">        <div class="help-head">
+          <div>
+            <div class="eyebrow">FIELD MANUAL</div>
+            <h2>CONTROLS &amp; SURVIVAL</h2>
+          </div>
+          <button id="helpClose">×</button>
+        </div>
+        <div class="help-grid">
+          <div class="help-block">
+            <h3>ON FOOT</h3>
+            <p><kbd>W A S D</kbd> walk · <kbd>SHIFT</kbd> run · <kbd>SPACE</kbd> jump</p>
+            <p><kbd>E</kbd> enter the nearest vehicle, tram, téléphérique or ski lift.</p>
+            <p><kbd>R</kbd> put on skis — only in snow, on a slope or piste.</p>
+            <p><kbd>MOUSE</kbd> look · <kbd>WHEEL</kbd> zoom · <kbd>ESC</kbd> release the mouse.</p>
+          </div>
+          <div class="help-block">
+            <h3>DRIVING</h3>
+            <p><kbd>W</kbd> throttle · <kbd>S</kbd> brake / reverse · <kbd>A D</kbd> steer.</p>
+            <p><kbd>SPACE</kbd> handbrake. <kbd>SHIFT</kbd> boost. <kbd>E</kbd> get out.</p>
+            <p>Bicycles and e-scooters cut through the old town; taxis are quick, vans carry pace, and the TAG bus takes no prisoners.</p>
+            <p>Live traffic now shares the grid. Cars, taxis, vans and buses yield when you step in front of them.</p>
+            <p>Only parked vehicles with cyan map dots are drivable; ambient traffic keeps moving through town.</p>
+          </div>
+          <div class="help-block">
+            <h3>THE CITY</h3>
+            <p><kbd>1</kbd> sunny · <kbd>2</kbd> rain · <kbd>3</kbd> snow. Weather is manual and instant.</p>
+            <p><kbd>M</kbd> opens the live map — your exact position, heading, trams, lifts and trails.</p>
+            <p>Every metre travelled earns 1 reward point. Distance milestones pay bonuses and raise your explorer rank.</p>
+            <p>Five tram lines cross the city — <b>A blue · B green · C pink · D orange · E purple</b>. Walk to a platform for the live TAG board; <kbd>E</kbd> boards and exits only while the tram is stopped at a stop.</p>
+            <p>On board, the cabin display shows the next stop — <b>PROCHAIN ARRÊT</b> — with its live countdown; the mouse looks around the saloon.</p>
+            <p>The téléphérique leaves from the Isère bank and climbs to the Bastille.</p>
+          </div>
+          <div class="help-block">
+            <h3>THE MOUNTAINS</h3>
+            <p>Find trailheads north of the river and southwest at Chamrousse. Follow the wooden signs.</p>
+            <p>In snow, the pistes above Chamrousse and the Bastille slopes become skiable.</p>
+            <p>Steep off-piste works too: point downhill, steer with <kbd>A D</kbd>, brake with <kbd>SPACE</kbd>.</p>
+          </div>
+        </div>
+        <div class="help-foot">GRENOBLE · ALPES DRIVE — an original procedural tribute. Geography stylised at 1:1 walking scale.</div>
+      </div>
+    </div>
+
+    <!-- ── FULL CITY MAP ─────────────────────────────────────────── -->
+    <div id="bigMap" class="hidden">
+      <div class="bigmap-shell">
+        <div class="bigmap-head">
+          <div>
+            <div class="eyebrow">TAG · RÉSEAU DE TRAMWAY</div>
+            <h2>PLAN DU RÉSEAU</h2>
+            <span class="bigmap-sub">GTFS TAG / M’RÉSO · 21 OCT 2026</span>
+          </div>
+          <div class="bigmap-live"><span></span>LIVE POSITION</div>
+          <button id="bigMapClose" aria-label="Close map">×</button>
+        </div>
+        <div class="bigmap-body">
+          <div class="bigmap-map">
+            <canvas id="cityMap" width="1200" height="1200"></canvas>
+            <div class="bigmap-compass">
+              <span>N</span>
+              <i></i>
+            </div>
+            <div class="bigmap-scale"><b>1 KM</b><i></i></div>
+          </div>
+          <aside class="bigmap-side">
+            <div class="bigmap-card bigmap-you">
+              <div class="eyebrow">YOU ARE HERE</div>
+              <strong id="bigMapPlace">PLACE GRENETTE</strong>
+              <span id="bigMapCoords">45.18850 N · 5.72450 E</span>
+              <span id="bigMapElevation">ALT 212 M</span>
+            </div>
+            <div class="bigmap-card">
+              <div class="eyebrow">NEAREST</div>
+              <strong id="bigMapNear">—</strong>
+              <span id="bigMapMode">ON FOOT · 0 KM/H</span>
+              <span id="bigMapTraffic">TRAFFIC · 0 LIVE</span>
+            </div>
+            <div class="bigmap-card">
+              <div class="eyebrow">REWARD POINTS</div>
+              <strong><span id="bigMapPoints">0</span> PTS</strong>
+              <span id="bigMapReward">0.00 KM · VISITEUR</span>
+            </div>
+            <div class="bigmap-legend">
+              <div class="legend-title">TAG TRAM NETWORK</div>
+              <div class="net-row"><i class="net-key" style="background:#3376B8">A</i><span>La Poya ↔ Le Pont-de-Claix L'Étoile</span></div>
+              <div class="net-row"><i class="net-key" style="background:#479A45">B</i><span>Grenoble Oxford ↔ Gières Plaine des Sports</span></div>
+              <div class="net-row"><i class="net-key" style="background:#C20078">C</i><span>Seyssins Le Prisme ↔ Condillac-Universités</span></div>
+              <div class="net-row"><i class="net-key" style="background:#DE9917">D</i><span>Grenoble Gares ↔ Saint-Martin-d'Hères Étienne Grappe</span></div>
+              <div class="net-row"><i class="net-key" style="background:#533786">E</i><span>Fontanil-Cornillon Palluel ↔ Grenoble Louise Michel</span></div>
+              <div class="legend-title" style="margin-top:5px">SYMBOLS</div>
+              <div><i class="lg-you"></i>Your position</div>
+              <div><i class="lg-tram"></i>Tram corridor</div>
+              <div><i class="lg-lift"></i>Aerial lift</div>
+              <div><i class="lg-trail"></i>Hiking trail</div>
+              <div><i class="lg-piste"></i>Ski piste</div>
+              <div><i class="lg-traffic"></i>Live traffic</div>
+              <div><i class="lg-river"></i>The Isère</div>
+            </div>
+            <div class="bigmap-note">The orange arrow is your exact position and heading. Map north is up.</div>
+          </aside>
+        </div>
+        <div class="bigmap-foot">
+          <span>GRENOBLE · ISÈRE · 45° 11′ N 5° 43′ E</span>
+          <span><kbd>M</kbd> OR <kbd>ESC</kbd> TO CLOSE</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="lockHint" class="hidden">CLICK TO CAPTURE THE MOUSE</div>
+  </body>
+</html>
